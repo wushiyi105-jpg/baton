@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Baton · 交接</title>
+<style>
+  :root{--bg:#101215;--panel:#191d23;--line:#2a313a;--ink:#eceff4;--dim:#8d97a4;--accent:#9ad07c;--warn:#e0a458;--bad:#e06c75}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,"PingFang SC",sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding:40px 20px 80px}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--dim);font-size:13px;margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 8px;color:var(--accent)}
+  .row{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;gap:10px}
+  .finding{color:var(--warn);font-size:13px}
+  .bad{color:var(--bad)}
+  .tag{color:var(--dim);font-size:12px}
+  .ok{color:var(--accent)}
+  .bar{height:5px;background:#242b33;border-radius:3px;margin:6px 0 12px}
+  .bar i{display:block;height:5px;background:var(--accent);border-radius:3px}
+  a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Baton</h1>
+  <div class="sub">{{ inst.who }} · {{ inst.role }} · 交接日 {{ inst.due_on }}（还有 {{ left }} 天）
+    · {{ c.done }}/{{ c.total }} 完成</div>
+  <div class="bar"><i style="width:{{ '%.0f' % (c.progress * 100) }}%"></i></div>
+
+  <div class="card"><h2>清单</h2>
+    {% for it in items %}
+    <div class="row">
+      <span>{% if it.done %}<span class="ok">✓</span>{% else %}○{% endif %} [{{ it.category }}] {{ it.title }}</span>
+      <span class="tag">{{ it.receiver or '没写接收人' }}{% if it.category == '账号' and not it.revoked %} · <span class="bad">权限未回收</span>{% endif %}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card"><h2>分类</h2>
+    {% for k, v in groups.items() %}<div class="row"><span>{{ k }}</span><span>{{ v }} 条</span></div>{% endfor %}
+  </div>
+
+  {% for f in c.findings %}<div class="finding">{{ f.rule_id }} -{{ f.penalty }} · {{ f.message }}</div>{% endfor %}
+  <p class="tag">{% if c.can_sign %}<span class="ok">可以签字</span>{% else %}<span class="bad">不能签字：权限没回收</span>{% endif %}
+    · <a href="/status.txt">状态</a> · <a href="/health">健康检查</a></p>
+
+  {% if signoffs %}<p class="tag">已签：{% for s in signoffs %}{{ s.signed_on }}{% endfor %}</p>{% endif %}
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "templates": [
+    {"role": "运营专员", "category": "账号", "title": "后台账号与子账号"},
+    {"role": "运营专员", "category": "账号", "title": "投放平台账户"},
+    {"role": "运营专员", "category": "文档", "title": "活动 SOP 与素材库"},
+    {"role": "运营专员", "category": "客户", "title": "对接的 3 家供应商"},
+    {"role": "运营专员", "category": "代码", "title": "报表脚本与定时任务"},
+    {"role": "运营专员", "category": "流程", "title": "每周数据复盘流程"}
+  ],
+  "instances": [
+    {"who": "小周", "role": "运营专员", "due_on": "2026-11-28"}
+  ],
+  "items": [
+    {"who": "小周", "category": "账号", "title": "后台账号与子账号", "receiver": "阿岚", "done": true, "revoked": false},
+    {"who": "小周", "category": "账号", "title": "投放平台账户", "receiver": "阿岚", "done": true},
+    {"who": "小周", "category": "文档", "title": "活动 SOP 与素材库", "receiver": "阿岚", "done": true},
+    {"who": "小周", "category": "文档", "title": "内容日历（含草稿）", "receiver": "阿岚", "done": true},
+    {"who": "小周", "category": "客户", "title": "对接的 3 家供应商", "receiver": "老陈", "done": true},
+    {"who": "小周", "category": "客户", "title": "社群管理员权限", "receiver": "", "done": false},
+    {"who": "小周", "category": "代码", "title": "报表脚本与定时任务", "receiver": "小何", "done": false},
+    {"who": "小周", "category": "流程", "title": "每周数据复盘流程", "receiver": "阿岚", "done": true},
+    {"who": "小周", "category": "杂项", "title": "工位钥匙与门禁卡", "receiver": "行政", "done": false}
+  ]
+}
