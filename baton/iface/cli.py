@@ -9,8 +9,9 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from ..adapters.llm import build_llm
 from ..adapters.store import SqliteStore
-from ..app.run import check, from_template, groups, handover_note, sign_instance
+from ..app.run import PROMPT, check, from_template, groups, handover_note, sign_instance
 from ..config import Settings
 from ..config import settings as default_settings
 from ..doctor import main as doctor_main
@@ -84,7 +85,8 @@ def fill(iid: int = typer.Option(1), db: Path = typer.Option(None)) -> None:
 def note(iid: int = typer.Option(1), db: Path = typer.Option(None)) -> None:
     """模型写交接说明（无 key 时不编）。"""
     s = _settings(db)
-    text, _ = handover_note(_store(s), s, iid)
+    llm = build_llm(s.llm_base_url, s.llm_api_key, s.llm_model, PROMPT) if s.llm_enabled else None
+    text, _ = handover_note(_store(s), s, iid, llm)
     console.print(text or "模型没开，用 status 看清单")
 
 
