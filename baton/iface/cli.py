@@ -10,6 +10,7 @@ import typer
 from rich.console import Console
 
 from ..adapters.llm import build_llm
+from ..adapters.notify import WebhookNotifier
 from ..adapters.store import SqliteStore
 from ..app.run import PROMPT, check, from_template, groups, handover_note, sign_instance
 from ..config import Settings
@@ -31,6 +32,13 @@ def _settings(db: Path | None, port: int | None = None) -> Settings:
 
 def _store(settings: Settings) -> SqliteStore:
     return SqliteStore(settings.db_path)
+
+
+def _notify(settings: Settings, text: str) -> None:
+    if not text or not settings.webhook_url:
+        return
+    ok = WebhookNotifier(settings.webhook_url).send(text)
+    console.print(f"[dim]webhook {'ok' if ok else 'failed'}[/]")
 
 
 @app.command()
@@ -87,7 +95,9 @@ def note(iid: int = typer.Option(1), db: Path = typer.Option(None)) -> None:
     s = _settings(db)
     llm = build_llm(s.llm_base_url, s.llm_api_key, s.llm_model, PROMPT) if s.llm_enabled else None
     text, _ = handover_note(_store(s), s, iid, llm)
-    console.print(text or "模型没开，用 status 看清单")
+    body = text or "模型没开，用 status 看清单"
+    console.print(body)
+    _notify(s, body)
 
 
 @app.command()

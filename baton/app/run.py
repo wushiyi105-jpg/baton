@@ -14,6 +14,16 @@ from ..ports import LLMPort, StorePort
 PROMPT = (Path(__file__).resolve().parents[2] / "prompts" / "handover.md").read_text(encoding="utf-8")
 
 
+def parse_json(text: str) -> dict:
+    """模型常把 JSON 包在 ```json 里；取出第一个完整对象再解析。"""
+    text = text.strip()
+    start = text.find("{")
+    end = text.rfind("}")
+    if start < 0 or end <= start:
+        raise ValueError("no json object")
+    return json.loads(text[start : end + 1])
+
+
 def check(store: StorePort, iid: int, today: date | None = None) -> Check:
     return build(store.instance(iid), store.list_items(iid), today or date.today())
 
@@ -44,7 +54,7 @@ def handover_note(
     items = store.list_items(iid)
     facts = [f"{it.category}|{it.title}|{it.receiver}" for it in items]
     try:
-        data = json.loads(llm.write(PROMPT, "\n".join(facts)))
+        data = parse_json(llm.write(PROMPT, "\n".join(facts)))
     except Exception:  # noqa: BLE001
         return "", []
     text = str(data.get("text", ""))
