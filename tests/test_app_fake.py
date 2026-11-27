@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 
 from baton.app.run import check
-from baton.domain.models import Instance, Item
+from baton.domain.models import Instance, Item, Signoff
 from baton.ports import StorePort
 
 
@@ -24,6 +24,12 @@ class InMemoryStore:
 
     def add_signoff(self, instance_id: int, signed_on: date, note: str = "") -> int:
         return 1
+
+    def list_signoffs(self) -> list[Signoff]:
+        return []
+
+    def set_item_state(self, item_id: int, done: bool, revoked: bool | None = None) -> bool:
+        return True
 
 
 def test_check_with_memory_store() -> None:

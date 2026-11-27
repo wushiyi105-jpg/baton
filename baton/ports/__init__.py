@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Protocol, runtime_checkable
 
-from ..domain.models import Instance, Item
+from ..domain.models import Instance, Item, Signoff
 
 
 @runtime_checkable
@@ -19,6 +19,10 @@ class StorePort(Protocol):
     def add_item(self, iid: int, category: str, title: str) -> int: ...
 
     def add_signoff(self, instance_id: int, signed_on: date, note: str = "") -> int: ...
+
+    def list_signoffs(self) -> list[Signoff]: ...
+
+    def set_item_state(self, item_id: int, done: bool, revoked: bool | None = None) -> bool: ...
 
 
 @runtime_checkable

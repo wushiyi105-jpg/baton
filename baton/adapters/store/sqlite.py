@@ -137,6 +137,17 @@ class SqliteStore:
             s.commit()
             return True
 
+    def set_item_state(self, item_id: int, done: bool, revoked: bool | None = None) -> bool:
+        with self.session() as s:
+            row = s.scalars(select(ItemRow).where(ItemRow.id == item_id)).first()
+            if row is None:
+                return False
+            row.done = done
+            if revoked is not None:
+                row.revoked = revoked
+            s.commit()
+            return True
+
     def add_signoff(self, instance_id: int, signed_on: date, note: str = "") -> int:
         with self.session() as s:
             row = SignoffRow(instance_id=instance_id, signed_on=signed_on, note=note)

@@ -12,6 +12,7 @@ from rich.console import Console
 from ..adapters.llm import build_llm
 from ..adapters.notify import WebhookNotifier
 from ..adapters.store import SqliteStore
+from ..app.checklist import apply_checklist, build_checklist
 from ..app.run import PROMPT, check, from_template, groups, handover_note, sign_instance
 from ..config import Settings
 from ..config import settings as default_settings
@@ -69,6 +70,47 @@ def status(iid: int = typer.Option(1), day: str = typer.Option(""), db: Path = t
     for f in c.findings:
         console.print(f"  [yellow]{f.rule_id}[/] -{f.penalty} {f.message}")
     console.print(f"合计扣 {c.penalty_total} 分，{'可以签字' if c.can_sign else '不能签字'}")
+
+
+@app.command()
+def handover(
+    iid: int = typer.Option(1, help="交接实例 id"),
+    out: Path = typer.Option(None, help="输出可勾选 Markdown；不填打印"),
+    day: str = typer.Option(""),
+    db: Path = typer.Option(None),
+) -> None:
+    """可勾选交接单：权限没回收会挡在签字前。"""
+    store = _store(_settings(db))
+    try:
+        body = build_checklist(store, iid, date.fromisoformat(day) if day else date.today())
+    except ValueError as e:
+        console.print(f"[red]{e}[/]")
+        raise typer.Exit(code=2)
+    if out:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(body, encoding="utf-8")
+        console.print(f"[green]已写出[/] {out}（{len(body.splitlines())} 行）")
+    else:
+        console.print(body)
+
+
+@app.command("apply")
+def apply_cmd(
+    file: Path = typer.Option(..., help="改过勾选的交接单"),
+    iid: int = typer.Option(1, help="交接实例 id"),
+    db: Path = typer.Option(None),
+) -> None:
+    """把交接单上的勾选回填数据库；已签字的单子拒绝修改。"""
+    store = _store(_settings(db))
+    if not file.exists():
+        console.print(f"[red]找不到 {file}[/]")
+        raise typer.Exit(code=2)
+    try:
+        seen, changed = apply_checklist(store, iid, file)
+    except ValueError as e:
+        console.print(f"[red]{e}[/]")
+        raise typer.Exit(code=2)
+    console.print(f"读到 {seen} 条勾选，更新 {changed} 条")
 
 
 @app.command()
