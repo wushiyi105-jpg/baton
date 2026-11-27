@@ -51,6 +51,9 @@ At least one account item is not marked revoked.
 **Can items belong to another category?**
 Only the five categories; anything else is reported.
 
+**Was the Docker image verified?**
+Docker is not installed on the build machine, so `docker build .` was not run and the image is unverified; only the Dockerfile and ports were checked statically.
+
 ## Commands
 
 See the Chinese README (`README.md`) for the command table with flags; every command supports `--help`.
@@ -63,12 +66,12 @@ FastAPI + Uvicorn, Jinja2, pydantic / pydantic-settings, httpx, Typer + Rich, SQ
 
 ```mermaid
 graph LR
-  A[岗位模板] --> M[条目补齐]
-  B[交接条目] --> M
-  M --> R[规则：归类 / 接收人 / 权限 / 逾期]
-  R --> P[模型写交接说明]
-  P --> G[守卫]
-  G --> O[进度 + 签字闸门]
+  A[role template] --> M[item completion]
+  B[handover items] --> M
+  M --> R[rules: category / owner / permissions / overdue]
+  R --> P[model writes handover note]
+  P --> G[guard]
+  G --> O[progress + sign-off gate]
 ```
 
 ## Layout
