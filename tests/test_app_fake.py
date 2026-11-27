@@ -1,19 +1,32 @@
-"""主用例只依赖 ports：用 MagicMock 内存假实现，不建 SQLite 文件。"""
+"""真实内存 Store 跑 check：不建 SQLite，mypy 校验 StorePort。"""
 
 from __future__ import annotations
 
 from datetime import date
-from unittest.mock import MagicMock
 
 from baton.app.run import check
+from baton.domain.models import Instance, Item
 from baton.ports import StorePort
 
 
-def test_main_path_with_memory_store(tmp_path) -> None:
-    store = MagicMock(spec=StorePort)
-    store.instance.return_value = None
-    store.list_items.return_value = []
-    
+class InMemoryStore:
+    def instance(self, iid: int) -> Instance | None:
+        return None
+
+    def list_items(self, iid: int) -> list[Item]:
+        return []
+
+    def templates(self, role: str) -> list[tuple[str, str]]:
+        return []
+
+    def add_item(self, iid: int, category: str, title: str) -> int:
+        return 1
+
+    def add_signoff(self, instance_id: int, signed_on: date, note: str = "") -> int:
+        return 1
+
+
+def test_check_with_memory_store() -> None:
+    store: StorePort = InMemoryStore()
     out = check(store, 1, date(2026, 1, 5))
-    assert out is not None
-    assert not (tmp_path / "app.db").exists()
+    assert out.total == 0
