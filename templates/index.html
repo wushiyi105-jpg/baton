@@ -1,6 +1,6 @@
 {% from "_macros.html" import shell, head, stats, card, tag, empty, note %}
-{% call shell("Baton", "交接", true) %}
-{{ head("交接清单", inst.who ~ " · " ~ inst.role ~ " · 交接日 " ~ inst.due_on ~ "（还有 " ~ left ~ " 天）") }}
+{% call shell("Baton", "交接夹板", true) %}
+{{ head("交接双方确认到哪一步", inst.who ~ " · " ~ inst.role ~ " · 交接日 " ~ inst.due_on ~ "（还有 " ~ left ~ " 天）") }}
 
 {{ stats([
   ("完成", c.done, "项"),

@@ -1,0 +1,27 @@
+:root {
+  --bg: #F4F5F6;
+  --bg-subtle: #ECEEF0;
+  --bg-muted: #DFE3E6;
+  --card: #FFFFFF;
+  --text: #191D22;
+  --text-2: #4a5158;
+  --text-3: #60676e;
+  --text-4: #696e73;
+  --border: #DCE1E5;
+  --border-2: #CBD2D8;
+  --border-3: #B6BEC6;
+  --accent: #2F5F9E;
+  --accent-soft: #E7EFF8;
+  --accent-ink: #244A7A;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-lg: 12px;
+}
+:root[data-theme="dark"] {
+  --accent: #82AEE5;
+  --accent-soft: #162842;
+  --accent-ink: #BBD3F2;
+}
+.topbar { border-bottom: 2px solid var(--accent); }
+.checklist .check { border-bottom-style: dashed; }
+
